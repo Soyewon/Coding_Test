@@ -25,42 +25,24 @@ int main()
     // 5 5 6 4 4 : 5개
     // 5 6 4 4 5 7: 6개
 
-    /*for(int st=0; st<n; st++)
-    {
-        int strLen = 0;
-        int en = st+1;
-        while(st<en && en<n)
-        {
-            if(check[a[en]]<k)
-            {
-                check[a[en]]++;
-                strLen++;
-                en++;
-                continue;
-            }
-            else
-                break;
-        }
-        res = max(res, strLen);
-        fill(check, check+MAX, 0);
-    }*/
-
     int st = 0;
     int en = 0;
-    
-    while(st<=en && en<n)
+    int strLen = 0;
+    while(st<n && en<n && st<=en)
     {
-        if(check[a[en]]<k)
+        if(check[a[en]]<k) // 숫자가 k개보다 적게 쓰인 경우
         {
             check[a[en]]++;
             en++;
+            strLen++;
         }
-        else
+        else // 숫자가 k개 이상 쓰인 경우
         {
             check[a[st]]--;
             st++;
+            strLen--;
         }
-        res = max(res, en-st);
+        res = max(res, strLen);
     }
 
     cout << res;
