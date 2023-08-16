@@ -1,115 +1,119 @@
-#include<iostream>
-#include<cstring>
-#include<queue>
- 
-#define endl "\n"
-#define MAX 100
+#include <iostream>
+#include <cstring>
+#include <queue>
+#include <utility>
+
 using namespace std;
- 
-int N;
-char MAP[MAX][MAX];
-bool Visit[MAX][MAX];
- 
-int dx[] = { 0, 0, 1, -1 };
-int dy[] = { 1, -1, 0, 0 };
- 
-void Input()
+
+int n;
+char board[101][101];
+bool check[101][101];
+int red = 0;
+int blue = 0;
+int green = 0;
+
+int dx[4] = {0, 0, -1, 1};
+int dy[4] = {1, -1, 0, 0};
+
+int res = 0; // 적록색맹 아닌 사람
+int resX = 0; // 적록색맹인 사람
+
+void BFS(int x, int y)
 {
-    cin >> N;
-    for (int i = 0; i < N; i++)
+    cout << "BFS 시작 :" << "{" << x << ", " << y << "}\n";
+    queue<pair<int, int>> que;
+    check[x][y] = true;
+
+    que.push({x, y});
+
+    while(!que.empty())
     {
-        for (int j = 0; j < N; j++)
+        int first = que.front().first;
+        int second = que.front().second;
+        que.pop();
+
+        for(int dir=0; dir<4; dir++)
         {
-            cin >> MAP[i][j];
-        }
-    }
-}
- 
-void BFS(int a, int b)
-{
-    queue<pair<int, int>> Q;
-    Q.push(make_pair(a, b));
-    Visit[a][b] = true;
- 
-    while (Q.empty() == 0)
-    {
-        int x = Q.front().first;
-        int y = Q.front().second;
-        Q.pop();
- 
-        for (int i = 0; i < 4; i++)
-        {
-            int nx = x + dx[i];
-            int ny = y + dy[i];
-            
-            if (nx >= 0 && ny >= 0 && nx < N && ny < N)
+            int nx = first + dx[dir];
+            int ny = second + dy[dir];
+
+            if(nx<0 || nx>=n || ny<0 || ny>=n) continue;
+            else
             {
-                if (Visit[nx][ny] == false)
+                if(!check[nx][ny])
                 {
-                    if (MAP[nx][ny] == MAP[x][y])
+                    if(board[nx][ny]==board[x][y])
                     {
-                        Visit[nx][ny] = true;
-                        Q.push(make_pair(nx, ny));
+                        check[nx][ny] = true;
+                        que.push({nx, ny});
                     }
                 }
             }
         }
     }
+    
 }
-void Solution()
+
+int main()
 {
-    int Answer, Answer2;
-    Answer = Answer2 = 0;
-    for (int i = 0; i < N; i++)
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+
+    cin >> n;
+
+    string s;
+    for(int i=0; i<n; i++)
     {
-        for (int j = 0; j < N; j++)
+        cin >> s;
+        for(int j=0; j<n; j++)
         {
-            if (Visit[i][j] == false)
+            board[i][j] = (char) s[j];
+        }
+    }
+
+    cout << "적록색맹 아닌 사람꺼\n";
+    for(int i=0; i<n; i++)
+    {
+        for(int j=0; j<n; j++)
+        {
+            if(!check[i][j])
             {
                 BFS(i, j);
-                Answer++;
+                res++;
             }
         }
     }
- 
-    memset(Visit, false, sizeof(Visit));
-    for (int i = 0; i < N; i++)
+
+    memset(check, false, sizeof(check)); // 방문 배열 초기화
+    for(int i=0; i<n; i++)
     {
-        for (int j = 0; j < N; j++)
+        for(int j=0; j<n; j++)
         {
-            if (MAP[i][j] == 'G') MAP[i][j] = 'R';
-        }
-    }
- 
-    for (int i = 0; i < N; i++)
-    {
-        for (int j = 0; j < N; j++)
-        {
-            if (Visit[i][j] == false)
+            if(board[i][j]=='R')
+                board[i][j] = 'G'; // 빨간색 초록색으로 바꾸기
+
+            /*if(!check[i][j])
             {
                 BFS(i, j);
-                Answer2++;
+                resX++;
+            }*/
+        }
+    }
+    
+    cout << "적록색맹인 사람꺼\n";
+    for(int i=0; i<n; i++)
+    {
+        for(int j=0; j<n; j++)
+        {
+            if(!check[i][j])
+            {
+                BFS(i, j);
+                resX++;
             }
         }
     }
- 
-    cout << Answer << " " << Answer2 << endl;
-}
- 
-void Solve()
-{
-    Input();
-    Solution();
-}
- 
-int main(void)
-{
-    ios::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
- 
-    //freopen("Input.txt", "r", stdin);
-    Solve();
- 
+
+    cout << res << " " << resX;
     return 0;
 }
